@@ -1,0 +1,44 @@
+provider:
+  name: aws
+  runtime: nodejs14.x
+  vpc:
+    securityGroupIds:
+      - "sg-00d9989e4ff8ea8c7"
+    subnetIds:
+      - "subnet-01ab91c448ca0385c"
+      - "subnet-07a1637a8f2d3364c"
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+  - serverless-lift
+
+useDotenv: true
+
+service: octo-tunnel
+
+constructs:
+  jobs:
+    type: queue
+    worker:
+      handler: app/handler.worker
+
+functions:
+  webhook:
+    handler: app/handler.webhook
+    environment:
+      GITHUB_WEBHOOK_SECRET: ${env:GITHUB_WEBHOOK_SECRET}
+    events:
+      - http:
+          path: /sync/{targetId}/{proxy+}
+          method: post
+
+  webhookAsync:
+    handler: app/handler.webhookAsync
+    environment:
+      GITHUB_WEBHOOK_SECRET: ${env.GITHUB_WEBHOOK_SECRET}
+      SQS_QUEUE_URL: ${construct:jobs.queueUrl}
+    events:
+      - http:
+          path: /{targetId}/{proxy+}
+          method: post
