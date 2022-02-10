@@ -1,3 +1,5 @@
+org: ksivamuthu
+app: octo-tunnel
 provider:
   name: aws
   runtime: nodejs14.x
@@ -36,7 +38,7 @@ functions:
   webhookAsync:
     handler: app/handler.webhookAsync
     environment:
-      GITHUB_WEBHOOK_SECRET: ${env.GITHUB_WEBHOOK_SECRET}
+      GITHUB_WEBHOOK_SECRET: ${env:GITHUB_WEBHOOK_SECRET}
       SQS_QUEUE_URL: ${construct:jobs.queueUrl}
     events:
       - http:

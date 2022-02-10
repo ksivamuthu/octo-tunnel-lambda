@@ -9,7 +9,7 @@ import { WebHookServiceItem } from "../utils/config";
 import { TError } from "../utils/error";
 import { getProperty } from "../utils/helper";
 
-const token = process.env.GITHUB_WEBHOOK_SECRET;
+const token = process.env.GITHUB_WEBHOOK_SECRET || "some";
 const sqs = new SQS({
   apiVersion: "latest",
   region: process.env.AWS_REGION,
@@ -112,7 +112,7 @@ export class WebHookService {
 
     if (
       signature.length !== calculatedHash.length ||
-      crypto.timingSafeEqual(
+      !crypto.timingSafeEqual(
         Buffer.from(signature),
         Buffer.from(calculatedHash)
       )
